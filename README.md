@@ -1,4 +1,4 @@
-# ingredient-swap
+# Ingredient Swap
 
 This project contains the code files for the manipulation of the AllRecipes recipe and ingredient databases, along with their GHG emissions and Land Use Values.
 
