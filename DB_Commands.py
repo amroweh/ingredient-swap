@@ -4,9 +4,8 @@ import pandas as pd
 
 # Main Function 
 def mainFunction(ingredient_ID, foodEx2Code):
-    # Filter Variables
+    # Number of swaps
     numIngredientSwaps = 5
-    minimumGHGReduction = 20
     # Ingredient ID and FoodEx2 Must Match and are in the Test CSV File
     # ingredient_ID = '271'
     # foodEx2Code = 'A0B9G'
@@ -62,8 +61,8 @@ def mainFunction(ingredient_ID, foodEx2Code):
     # Query Execution
     c.execute(query)
     suggestions = c.fetchall()
-    print('Suggestions:\n')
-    print(suggestions)
+    # print('Suggestions:\n')
+    # print(suggestions)
 
     # Query manipulation
     # Copy list into new list
@@ -86,24 +85,33 @@ def mainFunction(ingredient_ID, foodEx2Code):
     suggestions_with_rank.sort(key=lambda suggestions_with_rank: suggestions_with_rank[5], reverse=True)
 
     # Print final result
-    print('\nRanked Suggestions:\n')
-    print(suggestions_with_rank)
+    # print('\nRanked Suggestions:\n')
+    # print(suggestions_with_rank)
 
     # Close connection to DB
     conn.commit()
     conn.close()
 
-    # Return list of suggestions
-    return suggestions_with_rank
+    # Return list of suggestions as string to add to csv file
+    suggestions_string = ''
+    for index, suggestion in enumerate(suggestions_with_rank): 
+        suggestions_string += '@'+suggestion[0]         
+    print(suggestions_string)
+    return suggestions_string or 'No Swaps Possible'
 
 # Access File
 recipes = pd.read_csv('recipes.csv', index_col=0)
 for index, row in recipes.iloc[0:5].iterrows():    
-    foodEx2Code = recipes['foodex2']
-    ingredient_ID = recipes['match_flavourDB_ID']
-    recipes['Swaps'] = mainFunction(ingredient_ID, foodEx2Code)
+    foodEx2Code = row['foodex2']
+    ingredient_ID = row['match_flavourDB_ID']
+    try:
+        recipes['Swaps'] = mainFunction(ingredient_ID, foodEx2Code)        
+    except:
+        recipes['Swaps'] = 'NA'
+recipes.to_excel('newfile.xlsx', sheet_name='Ingredient Suggestions', index=False)
 
-for index, row in recipes.iloc[0:5].iterrows():        
+newrecipes = pd.read_excel('newfile.xlsx', index_col=0)
+for index, row in newrecipes.iloc[0:5].iterrows():        
     print(row['Swaps'])
 
 
