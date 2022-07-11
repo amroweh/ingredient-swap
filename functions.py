@@ -6,6 +6,17 @@ import csv
 conn = sqlite3.connect('db_flavour_molecules.db')
 c = conn.cursor()
 
+# Function to Check the constraints Input by the User
+def checkConstraints(threshold_GHG, threshold_FM, threshold_Cat, g_factor, f_factor):
+    if (threshold_GHG < 0 or threshold_GHG > 100 
+    or threshold_FM < 0 or threshold_FM > 100
+    or g_factor < 0 or g_factor > 1
+    or f_factor < 0 or f_factor > 1
+    or g_factor+f_factor != 1):
+        print('You have an error in the parameters. Please check the conditions of these parameters and try again...')
+        return False
+    else: return True
+
 # Function to Check if Ingredient Belongs to a List of Categories
 def checkCat(ing_ID, checklist):
     query_Check_Cat = '''SELECT Ingredients.new_category FROM Ingredients WHERE Ingredients.entity_id = '{}';'''.format(ing_ID)
@@ -78,7 +89,7 @@ def mainFunction(ingredient_ID, foodEx2Code, threshold_GHG, threshold_FM, thresh
 
     # Reorder list based on rank
     similar_Ing.sort(key=lambda similar_Ing: similar_Ing[4], reverse=True)
-
+    print(similar_Ing)
     # Return list of suggestions AS STRING to add to csv file
     suggestions_string = ''
     for index, ingredient in enumerate(similar_Ing): 
