@@ -1,6 +1,6 @@
 from functions_molecules import createFile_Molecules
 from functions_molecules import checkConstraints
-from function_profile import createFile_Profile
+from functions_profile import createFile_Profile
 from test import createFile_ID
 
 # Preset Conditions
