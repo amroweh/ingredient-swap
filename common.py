@@ -1,5 +1,8 @@
 import sqlite3
-import sys
+import csv
+
+from functions_molecules import mainFunction as main_Molecules
+from functions_profile import mainFunction as main_Profile
 
 
 # DB Connection 
@@ -25,3 +28,56 @@ def checkCat(ing_ID, checklist, tableName, ingredientColumnName, categoryColumnN
         return True
     else: 
         return False
+
+# Function to use mainFunctions output and write both to file
+def createNewRecipes(threshold_GHG, threshold_FM, threshold_Similarity, threshold_Cat, g_factor, f_factor):
+    print('Starting flavour profiles method...')
+    in_file = open("recipes.csv")
+    reader = csv.reader(in_file)
+    out_file = open("newrecipes.csv", "w")
+    fields = ('url','recipe','ingredient','match','foodex2','ghge_per_100g','lu_per_100g','weight','match_profile','match_profile_ID','Notes1','match_flavourDB','match_flavourDB_ID','Notes2','Swaps','Swaps2')
+    writer = csv.DictWriter(out_file, fieldnames=fields, lineterminator = '\n')
+    writer.writeheader()
+    next(reader)
+    for index, row in enumerate(reader):
+        if index == 80:
+            break
+        try:        
+            foodEx2Code = row[4]
+            ingredient_ID_Molec = row[12]
+            ingredient_ID_Prof = row[9]
+            writer.writerow({'url': row[0],
+            'recipe': row[1],
+            'ingredient': row[2],
+            'match': row[3],
+            'foodex2': row[4],
+            'ghge_per_100g': row[5],
+            'lu_per_100g': row[6],
+            'weight': row[7],
+            'match_profile': row[8],
+            'match_profile_ID': row[9],
+            'Notes1': row[10],
+            'match_flavourDB': row[11],
+            'match_flavourDB_ID': row[12],
+            'Notes2': row[13],
+            'Swaps': main_Molecules(ingredient_ID_Molec, foodEx2Code, threshold_GHG, threshold_FM, threshold_Cat, g_factor, f_factor),
+            'Swaps2': main_Profile(ingredient_ID_Prof, foodEx2Code, threshold_GHG, threshold_Similarity, threshold_Cat, g_factor, f_factor)})
+        except:
+            writer.writerow({'url': row[0],
+            'recipe': row[1],
+            'ingredient': row[2],
+            'match': row[3],
+            'foodex2': row[4],
+            'ghge_per_100g': row[5],
+            'lu_per_100g': row[6],
+            'weight': row[7],
+            'match_profile': row[8],
+            'match_profile_ID': row[9],
+            'Notes1': row[10],
+            'match_flavourDB': row[11],
+            'match_flavourDB_ID': row[12],
+            'Notes2': row[13],
+            'Swaps': 'NA',
+            'Swaps2': 'NA'}) 
+    in_file.close()    
+    out_file.close()

@@ -1,6 +1,7 @@
 from functions_molecules import createFile_Molecules
 from functions_molecules import checkConstraints
 from functions_profile import createFile_Profile
+from common import createNewRecipes
 from test import createFile_ID
 import sys 
 
@@ -21,8 +22,9 @@ print('Start of Function...\nWorking On It...')
 if checkConstraints(threshold_GHG, threshold_FM, threshold_Cat, threshold_Similarity, g_factor, f_factor) == False: sys.exit('You have an error in the parameters. Please check the conditions of these parameters and try again...')
 
 # Creates a modified csv file called 'newrecipes.csv' containing suggestions or 'N/A' if not possible
-#createFile_Molecules(threshold_GHG, threshold_FM, threshold_Cat, g_factor, f_factor)
+createFile_Molecules(threshold_GHG, threshold_FM, threshold_Cat, g_factor, f_factor)
 createFile_Profile(threshold_GHG, threshold_Similarity, threshold_Cat, g_factor, f_factor)
+#createNewRecipes(threshold_GHG, threshold_FM, threshold_Similarity, threshold_Cat, g_factor, f_factor) Still developing this one!!
 #createFile_ID()
 
 print('End of Function...')
