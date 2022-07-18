@@ -1,34 +1,18 @@
-# Imports for DB and CSV
+# Imports for DB, CSV, and Sys
 import sqlite3
 import csv
+import sys
+
+from common import checkConstraints, checkCat
 
 # DB Connection 
-conn = sqlite3.connect('db_flavour_molecules.db')
+conn = sqlite3.connect('database.db')
 c = conn.cursor()
 
-# Function to Check the constraints Input by the User
-def checkConstraints(threshold_GHG, threshold_FM, threshold_Cat, g_factor, f_factor):
-    if (threshold_GHG < 0 or threshold_GHG > 100 
-    or threshold_FM < 0 or threshold_FM > 100
-    or g_factor < 0 or g_factor > 1
-    or f_factor < 0 or f_factor > 1
-    or g_factor+f_factor != 1):
-        print('You have an error in the parameters. Please check the conditions of these parameters and try again...')
-        return False
-    else: return True
-
-# Function to Check if Ingredient Belongs to a List of Categories
-def checkCat(ing_ID, checklist):
-    query_Check_Cat = '''SELECT Ingredients.new_category FROM Ingredients WHERE Ingredients.entity_id = '{}';'''.format(ing_ID)
-    c.execute(query_Check_Cat)
-    category = c.fetchone()[0]
-    if category in checklist: 
-        return True
-    else: 
-        return False
 
 # Main Function
 def mainFunction(ingredient_ID, foodEx2Code, threshold_GHG, threshold_FM, threshold_Cat, g_factor, f_factor):
+    
     # Queries to be executed:
     # GHG emissions of selected entry
     query_GHG = '''SELECT GHGE_1kg_kgCO2eq FROM SHARP_ID WHERE SHARP_ID.FoodEx2 = '{}';'''.format(foodEx2Code)
@@ -84,7 +68,8 @@ def mainFunction(ingredient_ID, foodEx2Code, threshold_GHG, threshold_FM, thresh
     # Remove Ingredients that don't pass the common FM threshold
     similar_Ing[:] = [ing for ing in similar_Ing if ing[3] > threshold_FM]
     # Remove Ingredients that belong to unwanted categories
-    similar_Ing[:] = [ing for ing in similar_Ing if not checkCat(ing[0], threshold_Cat)]
+    similar_Ing[:] = [ing for ing in similar_Ing if not checkCat(ing[0], threshold_Cat, 'Ingredients', 'entity_id', 'new_category')]
+    
     # Note: Can add more filters here 
 
     # Reorder list based on rank

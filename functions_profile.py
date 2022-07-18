@@ -1,20 +1,13 @@
 # Imports for DB and CSV
 import sqlite3
 import csv
+import sys
+
+from common import checkCat, checkConstraints
 
 # DB Connection 
-conn = sqlite3.connect('db_flavour_molecules.db')
+conn = sqlite3.connect('database.db')
 c = conn.cursor()
-
-# Function to Check if Ingredient Belongs to a List of Categories
-def checkCat(ing_ID, checklist):
-    query_Check_Cat = '''SELECT Ingredients_Profiles.category FROM Ingredients_Profiles WHERE Ingredients_Profiles.ing_ID = '{}';'''.format(ing_ID)
-    c.execute(query_Check_Cat)
-    category = c.fetchone()[0]
-    if category in checklist: 
-        return True
-    else: 
-        return False
 
 # Function to calculate similarity between two ingredients based on flavour profile
 def calculateSimilarity(Sweetness1:float, Sweetness2:float, Saltiness1:float, Saltiness2:float, Sourness1:float, Sourness2:float, Bitterness1:float, Bitterness2:float, Umami1:float, Umami2:float, Fat1:float, Fat2:float) -> float:
@@ -99,7 +92,7 @@ def mainFunction(ingredient_ID, foodEx2Code, threshold_GHG, threshold_Similarity
     # Remove Ingredients that don't pass the common FM threshold
     similar_Ing[:] = [ing for ing in similar_Ing if ing[3] > threshold_Similarity]
     # Remove Ingredients that belong to unwanted categories
-    similar_Ing[:] = [ing for ing in similar_Ing if not checkCat(ing[0], threshold_Cat)]
+    similar_Ing[:] = [ing for ing in similar_Ing if not checkCat(ing[0], threshold_Cat, 'Ingredients_Profiles', 'ing_ID', 'category')]
     # Note: Can add more filters here 
 
     # Reorder list based on rank
