@@ -3,12 +3,21 @@ import sqlite3
 import csv
 import sys
 
-from common import checkConstraints, checkCat
+#from common import checkCat
 
 # DB Connection 
 conn = sqlite3.connect('database.db')
 c = conn.cursor()
 
+# Function to Check if Ingredient Belongs to a List of Categories
+def checkCat(ing_ID, checklist, tableName, ingredientColumnName, categoryColumnName):
+    query_Check_Cat = '''SELECT {} FROM {} WHERE {} = '{}';'''.format(categoryColumnName, tableName, ingredientColumnName, ing_ID)
+    c.execute(query_Check_Cat)
+    category = c.fetchone()[0]
+    if category in checklist: 
+        return True
+    else: 
+        return False
 
 # Main Function
 def mainFunction(ingredient_ID, foodEx2Code, threshold_GHG, threshold_FM, threshold_Cat, g_factor, f_factor):

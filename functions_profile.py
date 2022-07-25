@@ -3,11 +3,21 @@ import sqlite3
 import csv
 import sys
 
-from common import checkCat, checkConstraints
+#`from common import checkCat, checkConstraints
 
 # DB Connection 
 conn = sqlite3.connect('database.db')
 c = conn.cursor()
+
+# Function to Check if Ingredient Belongs to a List of Categories
+def checkCat(ing_ID, checklist, tableName, ingredientColumnName, categoryColumnName):
+    query_Check_Cat = '''SELECT {} FROM {} WHERE {} = '{}';'''.format(categoryColumnName, tableName, ingredientColumnName, ing_ID)
+    c.execute(query_Check_Cat)
+    category = c.fetchone()[0]
+    if category in checklist: 
+        return True
+    else: 
+        return False
 
 # Function to calculate similarity between two ingredients based on flavour profile
 def calculateSimilarity(Sweetness1:float, Sweetness2:float, Saltiness1:float, Saltiness2:float, Sourness1:float, Sourness2:float, Bitterness1:float, Bitterness2:float, Umami1:float, Umami2:float, Fat1:float, Fat2:float) -> float:
