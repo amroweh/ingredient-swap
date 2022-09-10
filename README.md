@@ -1,4 +1,6 @@
-# Ingredient Swap 2
+# Ingredient Swap 
+
+*Disclaimer: the original version of this program was developed as part of a Master's dissertation submitted to the Information School at the University of Sheffield, Sheffield, UK.
 
 ## Introduction
 This project contains the code files for the manipulation of the AllRecipes recipe and ingredient databases, along with their GHG emissions and Land Use Values.
